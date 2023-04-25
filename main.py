@@ -1,7 +1,9 @@
 from flask import Flask
+from flask_cors import CORS
 from bs4_Class import FindData
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route('/')
 def home_page():
