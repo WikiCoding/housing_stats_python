@@ -7,6 +7,48 @@ app = Flask(__name__)
 def home_page():
     return '<h1>Hello!</h1>'
 
+@app.route('/stats/gaia&porto')
+def get_stats_local():
+    vng = FindData('Vila Nova de Gaia - Imovirtual')
+    vng_prices = []
+    vng_prices_page1 = vng.find_prices(
+        'https://www.imovirtual.com/arrendar/apartamento/vila-nova-de-gaia/?search%5Bregion_id%5D=13&search'
+        '%5Bsubregion_id%5D=195&nrAdsPerPage=72',
+        'li', 'offer-item-price')
+    for price in vng_prices_page1:
+        vng_prices.append(price)
+    count_vng = 2
+    while count_vng <= 2:
+        prices_other_pages = vng.find_prices(
+            f'https://www.imovirtual.com/arrendar/apartamento/?search%5Bregion_id%5D=13&search'
+            f'%5Bsubregion_id%5D=190&nrAdsPerPage=72&page={count_vng}', 'li', 'offer-item-price')
+        for price in prices_other_pages:
+            vng_prices.append(price)
+        count_vng += 1
+
+    vng_data = vng.stats(vng_prices)
+
+    porto = FindData('Porto - Imovirtual')
+    porto_prices = []
+    porto_prices_page1 = porto.find_prices(
+        'https://www.imovirtual.com/arrendar/apartamento/porto/?search%5Bregion_id%5D=13&search%5Bsubregion_id%5D=190&nrAdsPerPage=72',
+        'li', 'offer-item-price')
+    for price in porto_prices_page1:
+        porto_prices.append(price)
+    count_porto = 2
+    while count_porto <= 4:
+        prices_other_pages = porto.find_prices(
+            f'https://www.imovirtual.com/arrendar/apartamento/?search%5Bregion_id%5D=13&search'
+            f'%5Bsubregion_id%5D=190&nrAdsPerPage=72&page={count_porto}', 'li', 'offer-item-price')
+        for price in prices_other_pages:
+            porto_prices.append(price)
+        count_porto += 1
+    porto_data = porto.stats(porto_prices)
+
+    data_dict = [vng_data, porto_data]
+
+    return data_dict
+
 @app.route('/stats')
 def get_stats():
     vng = FindData('Vila Nova de Gaia - Imovirtual')
