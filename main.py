@@ -3,6 +3,9 @@ from bs4_Class import FindData
 
 app = Flask(__name__)
 
+@app.route('/')
+def home_page():
+    return '<h1>Hello!</h1>
 
 @app.route('/stats')
 def get_stats():
